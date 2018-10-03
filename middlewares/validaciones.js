@@ -9,16 +9,19 @@ exports.VerificaToken = function(req, res, next) {
 
 
     jwt.verify(token, SEED, (err, decoded) => {
+
         if (err) {
             return res.status(401).json({
                 ok: false,
-                mensaje: "Token invalido",
-                errores: err
+                mensaje: 'Token incorrecto',
+                errors: err
             });
         }
+
+        req.usuario = decoded.usuario;
+
+        next();
+
+
     });
-
-    req.usuarioPeticion = decoded.usuario;
-
-    next();
 };
