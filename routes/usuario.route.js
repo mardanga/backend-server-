@@ -43,7 +43,7 @@ app.get('/', (req, res, next) => {
 //====================================================//
 // crear usuarios 
 //====================================================//
-app.post('/', mdAutentificacion.VerificaToken, (req, res) => {
+app.post('/',  (req, res) => {
 
     var body = req.body;
 
