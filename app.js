@@ -18,9 +18,9 @@ var app = express();
 
 // CORS
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
 });
 
 //conexion a BD
@@ -38,7 +38,7 @@ app.use('/hospital', hospitalRoutes);
 app.use('/medico', medicoRoutes);
 app.use('/busqueda', busquedaRoutes);
 app.use('/upload', uploadRoutes);
-app.use('/imagenes', imagenesRoutes);
+app.use('/img', imagenesRoutes);
 
 app.use('/', rootRoutes);
 
