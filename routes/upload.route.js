@@ -40,7 +40,6 @@ app.put('/:tabla/:id', (req, res, next) => {
     var path = './uploads/' + req.params.tabla + '/';
 
 
-
     archivo.mv(path + nombreGaurdado, function(err) {
         if (err) {
             res.status(400).json({
@@ -66,13 +65,23 @@ function subirPorTipo(id, tabla, nombre, res) {
                 });
             }
 
+
             var pathViejo = './uploads/usuario/' + usuario.img;
+            console.log(pathViejo);
 
             if (fs.existsSync(pathViejo)) {
-                fs.unlink(pathViejo);
+
+                fs.unlink(pathViejo, (err) => {
+                    if (err) {
+                        console.error("failed to delete local image:" + err);
+                    } else {
+                        console.log('successfully deleted local image');
+                    }
+                });
             }
 
             usuario.img = nombre;
+
             usuario.save((err, usuarioGuardado) => {
 
                 if (err) {
