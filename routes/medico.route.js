@@ -17,14 +17,15 @@ app.use(bodyParser.json());
 //====================================================//
 app.get('/', (req, res, next) => {
 
-    var pagina = req.query.pagina || 0;
-    pagina = Number(pagina);
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
 
     Medico.find({})
-        .skip(pagina * 3)
+        .populate('hospital')
+        .skip(desde)
         .limit(3)
-        .populate('usuario', 'nombre email')
-        .populate('hospital', 'nombre')
+        .populate('usuario', 'nombre email img')
+        .populate('hospital', 'nombre img')
         .exec(
             (err, medicos) => {
                 if (err) {
@@ -46,6 +47,42 @@ app.get('/', (req, res, next) => {
                 });
             }
         );
+
+});
+
+//====================================================//
+// actualizar medico 
+//====================================================//
+app.get('/:id', mdAutentificacion.VerificaToken, (req, res) => {
+
+    Medico.findById(req.params.id)
+        .populate('hospital')
+        .populate('medico')
+        .exec((err, medicobd) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: "Error en buscar medico",
+                    errores: err
+                });
+            }
+
+            if (!medicobd) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: "No existe ese medico"
+                });
+            }
+
+
+            res.status(200).json({
+                ok: true,
+                medico: medicobd,
+                usuarioPeticion: req.usuarioPeticion
+            });
+
+        });
 
 });
 
@@ -88,6 +125,7 @@ app.post('/', mdAutentificacion.VerificaToken, (req, res) => {
 app.put('/:id', mdAutentificacion.VerificaToken, (req, res) => {
 
     Medico.findById(req.params.id, (err, medicobd) => {
+
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -107,7 +145,8 @@ app.put('/:id', mdAutentificacion.VerificaToken, (req, res) => {
         medicobd.nombre = body.nombre;
         medicobd.img = body.img;
         medicobd.usuario = req.usuario._id;
-        medicobd.hospital = req.hospital;
+        medicobd.hospital = body.hospital;
+
 
         medicobd.save((err, medicoGuardado) => {
             if (err) {

@@ -17,27 +17,35 @@ app.use(bodyParser.json());
 //====================================================//
 app.get('/', (req, res, next) => {
 
-    Usuario.find({}, 'nombre email img role')
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
+
+    Usuario.find({}, 'nombre email img role google')
+        .skip(desde)
+        .limit(5)
         .exec(
             (err, usuarios) => {
+
                 if (err) {
                     return res.status(500).json({
                         ok: false,
-                        mensaje: "Error en obtener usuarios",
-                        errores: err
+                        mensaje: 'Error cargando usuario',
+                        errors: err
                     });
                 }
 
-                res.status(200).json({
-                    ok: true,
-                    usuarios: usuarios,
-                    usuarioPeticion: req.usuarioPeticion
-                });
+                Usuario.count({}, (err, conteo) => {
 
-            }
-        );
+                    res.status(200).json({
+                        ok: true,
+                        usuarios: usuarios,
+                        total: conteo,
+                        desde: desde
+                    });
+
+                })
+            });
 });
-
 
 
 //====================================================//
@@ -114,11 +122,8 @@ app.put('/:id', mdAutentificacion.VerificaToken, (req, res) => {
                 usuario: usuarioGuardado,
                 usuarioPeticion: req.usuarioPeticion
             });
-
         });
-
     });
-
 });
 
 //====================================================//

@@ -16,11 +16,11 @@ app.use(bodyParser.json());
 //====================================================//
 app.get('/', (req, res, next) => {
 
-    var pagina = req.query.pagina || 0;
-    pagina = Number(pagina);
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
 
     Hospital.find({})
-        .skip(pagina * 3)
+        .skip(desde)
         .limit(3)
         .exec(
             (err, hospitales) => {
@@ -47,6 +47,41 @@ app.get('/', (req, res, next) => {
         );
 });
 
+//====================================================//
+//  obtener hospitales
+//====================================================//
+app.get('/:id', (req, res, next) => {
+
+    var id = req.params.id;
+    Hospital.findById(id)
+        .populate('usuario', 'nombre img email')
+        .exec(
+            (err, hospital) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje: "Error en obtener hospital",
+                        errores: err
+                    });
+                }
+
+                if (!hospital) {
+                    return res.status(400).json({
+                        ok: false,
+                        mensaje: 'El hospital con el id ' + id + ' no existe',
+                        errors: { message: 'No existe un hospital con ese ID' }
+                    });
+                }
+
+
+
+                res.status(200).json({
+                    ok: true,
+                    hospital
+                });
+            }
+        );
+});
 
 
 //====================================================//
@@ -55,6 +90,8 @@ app.get('/', (req, res, next) => {
 app.post('/', mdAutentificacion.VerificaToken, (req, res) => {
 
     var body = req.body;
+    console.log("hola mundo");
+
 
     var hospitalNuevo = new Hospital({
         nombre: body.nombre,
