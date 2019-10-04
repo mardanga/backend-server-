@@ -120,7 +120,8 @@ app.post('/google', async(req, res) => {
                     ok: true,
                     usuario: usuarioDb,
                     id: usuarioDb.id,
-                    token: token
+                    token: token,
+                    menu: obtenerMenu(usuarioDb.role)
                 });
             });
         }
@@ -173,11 +174,42 @@ app.post('/', (req, res) => {
             ok: true,
             usuario: usuarioDb,
             id: usuarioDb.id,
-            token: token
+            token: token,
+            menu: obtenerMenu(usuarioDb.role)
         });
     });
 
 
 });
+
+function obtenerMenu(rol) {
+    var menu = [{
+            titulo: 'Principal',
+            icono: 'mdi mdi-gauge',
+            submenu: [
+                { titulo: 'Dashboard', url: '/dashboard' },
+                { titulo: 'ProgressBar', url: '/progress' },
+                { titulo: 'Gráficas', url: '/graficas1' },
+                { titulo: 'Promesas', url: '/promesas' },
+                { titulo: 'Rxjs', url: '/rxjs' }
+            ]
+        },
+        {
+            titulo: 'Mantenimiento',
+            icono: 'mdi mdi-folder-lock-open',
+            submenu: [
+
+                { titulo: 'Hospitales', url: '/hospitales' },
+                { titulo: 'Medicos', url: '/medicos' }
+
+            ]
+        }
+    ];
+
+    if (rol === "ADMIN_ROLE") {
+        menu[1].submenu.push({ titulo: 'Usuarios', url: '/usuarios' });
+    }
+    return menu;
+}
 
 module.exports = app;

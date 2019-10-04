@@ -51,7 +51,7 @@ app.get('/', (req, res, next) => {
 //====================================================//
 // crear usuarios 
 //====================================================//
-app.post('/', (req, res) => {
+app.post('/', [mdAutentificacion.VerificaToken, mdAutentificacion.verificaADMIN_o_MismoUsuario], (req, res) => {
 
     var body = req.body;
 
@@ -85,7 +85,7 @@ app.post('/', (req, res) => {
 //====================================================//
 // actualizar usuarios 
 //====================================================//
-app.put('/:id', mdAutentificacion.VerificaToken, (req, res) => {
+app.put('/:id', [mdAutentificacion.VerificaToken, mdAutentificacion.verificaADMIN_o_MismoUsuario], (req, res) => {
 
     Usuario.findById(req.params.id, (err, usuario) => {
         if (err) {
